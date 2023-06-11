@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafit.base.model.dao.userDao.UserDao">
+    <select id="selectList" resultType="User">
+        SELECT *
+        FROM user;
+    </select>   
+    <!-- 유저x를 팔로우하는 사람 찾기 -->
+    <select id="selectFollowerList" resultType="User"
+		parameterType="String">
+		SELECT user.*
+		FROM user, follow
+		WHERE user.user_id = follow.follower and follow.following = #{user_id}
+		
+		
+<!-- 		(SELECT follower -->
+<!-- 		FROM follow -->
+<!-- 		WHERE following = #{user_id}) -->
+	</select>
+    <!-- 유저x가 팔로우하는 사람 찾기 -->
+    <select id="selectFollowingList" resultType="User" parameterType="String">
+        SELECT *
+        FROM user
+        WHERE user_id = (SELECT following
+        					FROM follow
+        					WHERE follower = #{user_id})
+    </select>
+    
+    <!-- 팔로우 등록 -->
+    <insert id="insertFollow" parameterType="Follow">
+        INSERT INTO follow (following, follower)
+        VALUES (#{following}, #{follower});
+    </insert>
+    
+    <!-- 언팔로우 -->
+    <delete id="deleteFollow" parameterType="Follow">
+        DELETE FROM follow
+        WHERE following = #{following} AND follower = #{follower};
+    </delete>
+    
+    <!-- id로 유저 찾기 -->
+    <select id="selectId" parameterType="String" resultType="User">
+        SELECT *
+        FROM user
+        WHERE user_id = #{user_id};
+    </select>
+    
+    <!-- 유저 정보 갱신 -->
+    <update id="updateUser" parameterType="User">
+        UPDATE user
+        SET user_id=#{user_id}, user_password=#{user_password}, email = #{email}, gender=#{gender}, 
+        height=#{height}, weight=#{weight}, career=#{career}, goal=#{goal}, growpart=#{growpart}, smm=#{smm}
+        WHERE user_id = #{user_id};
+    </update>
+    
+    <!-- 회원 탈퇴 -->
+    <delete id="deleteUser" parameterType="String">
+        DELETE FROM user
+        WHERE user_id = #{user_id};
+    </delete>
+    
+    <insert id="registWeight" parameterType="User">
+    	INSERT INTO WeightTracker (weight, user_id)
+    	VALUES (#{weight}, #{user_id})
+    </insert>
+    
+    <select id="searchWeight" parameterType="String" resultType="WeightTracker">
+    	SELECT weight, created_date
+    	FROM weighttracker
+    	WHERE user_id = #{user_id}
+    		AND created_date >= DATE_SUB(NOW(), INTERVAL 1 WEEK)
+    	ORDER BY created_date;
+    </select>
+    
+<!--     회원가입 -->
+    <insert id="insertUser" parameterType="User">
+        INSERT INTO User
+        VALUES (#{user_id}, #{user_password}, #{email}, #{gender},  #{height}, #{weight}, #{career}, #{goal}, #{growpart}, #{smm})
+    </insert>
+</mapper>

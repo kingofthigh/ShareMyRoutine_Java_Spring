@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.ssafit.base.model.dao.videoDao.LikeVideoDao">
+	<select id="HowManyLike" parameterType="String"
+		resultType="LikeVideo">
+		SELECT *
+		FROM likevideo
+		WHERE video_id = #{video_id};
+	</select>
+
+	<insert id="addLikeVideo" parameterType="LikeVideo">
+		INSERT INTO likevideo
+		(video_id, user_id)
+		VALUES (#{video_id}, #{user_id})
+	</insert>
+
+	<delete id="deleteLikeVideo" parameterType="String">
+		DELETE FROM likevideo
+		WHERE video_id = #{video_id} AND user_id = #{user_id}
+	</delete>
+
+	<select id="selectLikeVideo" parameterType="String"
+		resultType="Video">
+		SELECT *
+		FROM video as v inner join (SELECT video_id
+							FROM likevideo
+							WHERE user_id=#{user_id}) as uv
+						on v.video_id = uv.video_id
+	</select>
+
+
+</mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="com.ssafit.base.model.dao.postDao.PostDao">
+ 	<insert id="registPost" parameterType="Post" keyColumn="id" useGeneratedKeys="true">
+ 		INSERT INTO post (user_id, post_content, post_img, workpage_id)
+ 		VALUES (#{user_id}, #{post_content}, #{post_img}, #{workpage_id})
+ 	</insert>
+ 	<update id="updatePost" parameterType="Post">
+ 		UPDATE Post
+ 		SET post_content=#{post_content}, post_img=#{post_img}
+ 		WHERE post_id=#{post_id}
+ 	</update>
+ 	<delete id="deletePost" parameterType="int">
+		DELETE
+		FROM Post
+		WHERE post_id=#{post_id}
+	</delete>
+	
+	<select id="selectAllPost" resultType="Post">
+		SELECT *
+		FROM Post
+		ORDER BY created_date;
+	</select>
+	<select id="selectPostByUserId" parameterType="String" resultType="Post">
+		SELECT *
+		FROM post
+		WHERE user_id = #{user_id}
+	</select>
+	<select id="selectPostByPostId" parameterType="int" resultType="Post">
+		SELECT *
+		FROM post
+		WHERE post_id = #{post_id}
+	</select>
+	<select id="selectPostMyFollow" parameterType="String" resultType="Post">
+		SELECT *
+		FROM post
+		WHERE user_id = (SELECT following
+        					FROM follow
+        					WHERE follower = #{user_id})
+	</select>
+ </mapper>
